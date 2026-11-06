@@ -1,0 +1,52 @@
+name: Bug, false positive or missed detection
+description: Something is detected that shouldn't be, or isn't detected but should be
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Do not paste real identifiers or real documents.** Reproduce with
+        `canpii generate <kind>` or with a value whose digits/letters you have
+        all changed. Keep separators and surrounding words, which matter for detection.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Type
+      options:
+        - False positive (something unrelated was detected)
+        - False negative (an identifier was missed)
+        - Crash / error
+        - Export / gateway configuration problem
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction (synthetic data only)
+      render: python
+      placeholder: |
+        from canpii import create_analyzer
+        analyzer = create_analyzer()
+        print(analyzer.analyze("Call 416-555-0123", language="en"))
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual (entity, span, score)
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      placeholder: "canpii 0.1.0, presidio-analyzer 2.2.366, Python 3.12, spaCy model"
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmation
+      options:
+        - label: This issue contains no real identifiers or personal information.
+          required: true

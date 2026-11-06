@@ -1,0 +1,13 @@
+canpii
+Copyright 2026 Arthur Jin and canpii contributors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+canpii extends Microsoft Presidio (https://github.com/data-privacy-stack/presidio),
+which is licensed under the MIT License. canpii does not copy Presidio source
+code; it subclasses Presidio's public APIs and, where noted, enables Presidio's own
+CaSinRecognizer and CaPostalCodeRecognizer at runtime.
+
+canpii is an independent community project. It is not affiliated with or
+endorsed by Microsoft, the Presidio maintainers, the Government of Canada, or any
+provincial government or agency named in its documentation.

@@ -1,0 +1,64 @@
+name: New identifier / province request
+description: Propose a new Canadian identifier or provincial variant
+title: "Add <province> <identifier> recognizer"
+labels: ["new identifier"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never include a real identifier.** Use made-up examples with the right shape
+        (e.g. replace every digit). Issues with real data will be deleted.
+  - type: input
+    id: identifier
+    attributes:
+      label: Identifier
+      placeholder: "e.g. Manitoba Personal Health Identification Number (PHIN)"
+    validations:
+      required: true
+  - type: dropdown
+    id: entity
+    attributes:
+      label: Entity
+      options:
+        - CA_HEALTH_NUMBER
+        - CA_DRIVER_LICENSE
+        - CA_PASSPORT
+        - CA_BN
+        - CA_BANK_ACCOUNT
+        - New entity (explain below)
+    validations:
+      required: true
+  - type: input
+    id: province
+    attributes:
+      label: Province / territory (or "federal")
+    validations:
+      required: true
+  - type: textarea
+    id: format
+    attributes:
+      label: Format and validation rules
+      description: Length, letters/digits, separators, check digit algorithm, embedded data.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources
+      description: |
+        Links to official documentation (government, regulator, payments network) if
+        possible. Mark secondary (vendor docs, Wikipedia) and community sources as such.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context words (English and French)
+      placeholder: "PHIN, Manitoba Health, carte santé, ..."
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmation
+      options:
+        - label: This issue contains no real identifiers or personal information.
+          required: true
