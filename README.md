@@ -7,7 +7,7 @@
   <a href="https://github.com/ArthurJZL/canpii/actions/workflows/ci.yml"><img src="https://github.com/ArthurJZL/canpii/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/python-3.10%E2%80%933.13-blue" alt="Python 3.10–3.13">
   <img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="Apache-2.0">
-  <a href="https://github.com/ArthurJZL/canpii/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/badge/contributions-welcome-7057ff" alt="contributions welcome"></a>
+  <a href="https://github.com/ArthurJZL/canpii/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/badge/good%20first%20issues-welcome-purple" alt="good first issues welcome"></a>
 </p>
 
 <p align="center">
