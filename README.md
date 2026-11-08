@@ -88,7 +88,7 @@ print(AnonymizerEngine().anonymize(text=text, analyzer_results=results).text)
 ```python
 from canpii import get_preset
 
-entities = get_preset("phipa").entity_list()   # or "pipeda", "quebec_law25"
+entities = get_preset("phipa").entity_list()  # or "pipeda", "quebec_law25"
 ```
 
 <details>
