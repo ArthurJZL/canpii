@@ -3,11 +3,11 @@
 </p>
 
 <p align="center">
-  <a href="https://pypi.org/project/canpii/"><img src="https://img.shields.io/pypi/v/canpii?color=4ade80" alt="PyPI"></a>
+  <a href="https://pypi.org/project/canpii/"><img src="https://badge.fury.io/py/canpii.svg" alt="PyPI version"></a>
   <a href="https://github.com/ArthurJZL/canpii/actions/workflows/ci.yml"><img src="https://github.com/ArthurJZL/canpii/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/python-3.10%E2%80%933.13-blue" alt="Python 3.10–3.13">
   <img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="Apache-2.0">
-  <a href="https://github.com/ArthurJZL/canpii/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/ArthurJZL/canpii/good%20first%20issue?label=good%20first%20issues&color=7057ff" alt="good first issues"></a>
+  <a href="https://github.com/ArthurJZL/canpii/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/badge/contributions-welcome-7057ff" alt="contributions welcome"></a>
 </p>
 
 <p align="center">
