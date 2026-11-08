@@ -21,11 +21,17 @@
 ## See it in 10 seconds
 
 ```diff
-- Patient Jane Tremblay, OHIP 1234-567-897 AB, passport GA123456. Refund to transit 00011-003, account 1234567.
-+ Patient <PERSON>, OHIP <CA_HEALTH_NUMBER>, passport <CA_PASSPORT>. Refund to transit <CA_BANK_ACCOUNT>, account <CA_BANK_ACCOUNT>.
+- Jane Tremblay, OHIP 1234-567-897 AB, passport GA123456.
++ <PERSON>, OHIP <CA_HEALTH_NUMBER>, passport <CA_PASSPORT>.
 
-- Carte d'assurance maladie BOUF 9451 1419, numéro d'entreprise 123456782 RT 0001, permis de conduire L1234-567890-12.
-+ Carte d'assurance maladie <CA_HEALTH_NUMBER>, numéro d'entreprise <CA_BN>, permis de conduire <CA_DRIVER_LICENSE>.
+- Refund to transit 00011-003, account 1234567.
++ Refund to transit <CA_BANK_ACCOUNT>, account <CA_BANK_ACCOUNT>.
+
+- Carte santé BOUF 9451 1419, entreprise 123456782 RT 0001.
++ Carte santé <CA_HEALTH_NUMBER>, entreprise <CA_BN>.
+
+- Permis de conduire L1234-567890-12.
++ Permis de conduire <CA_DRIVER_LICENSE>.
 ```
 
 Stock Presidio has no recognizer for any of these Canadian identifiers. *(All identifiers on this page are synthetic.)*
