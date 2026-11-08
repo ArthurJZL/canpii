@@ -1,27 +1,40 @@
-# canpii
+<p align="center">
+  <img src="docs/assets/banner.png" alt="canpii: detect the Canadian PII that Presidio misses" width="100%">
+</p>
 
-**Canadian PII recognizers for [Microsoft Presidio](https://github.com/data-privacy-stack/presidio):
-provincial health numbers, passport, CRA Business Number, bank routing and driver's
-licences, with English and French context, LiteLLM / MCP-gateway exports and
-PIPEDA / PHIPA / Quebec Law 25 presets.**
+<p align="center">
+  <a href="https://pypi.org/project/canpii/"><img src="https://img.shields.io/pypi/v/canpii?color=4ade80" alt="PyPI"></a>
+  <a href="https://github.com/ArthurJZL/canpii/actions/workflows/ci.yml"><img src="https://github.com/ArthurJZL/canpii/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/python-3.10%E2%80%933.13-blue" alt="Python 3.10–3.13">
+  <img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="Apache-2.0">
+  <a href="https://github.com/ArthurJZL/canpii/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/ArthurJZL/canpii/good%20first%20issue?label=good%20first%20issues&color=7057ff" alt="good first issues"></a>
+</p>
 
-[![CI](https://github.com/ArthurJZL/canpii/actions/workflows/ci.yml/badge.svg)](https://github.com/ArthurJZL/canpii/actions/workflows/ci.yml)
-![Python](https://img.shields.io/badge/python-3.10%E2%80%933.13-blue)
-![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![Status](https://img.shields.io/badge/status-alpha-orange)
+<p align="center">
+  <b>Canadian PII recognizers for <a href="https://github.com/data-privacy-stack/presidio">Microsoft Presidio</a></b><br>
+  Provincial health cards · passport · CRA Business Number · bank accounts · driver's licences<br>
+  English &amp; French · LiteLLM and MCP-gateway exports · PIPEDA / PHIPA / Québec Law 25 presets
+</p>
 
-## Why this exists
+---
 
-Presidio is the de-facto open-source PII detector (the `presidio-analyzer` package has
-millions of monthly downloads), but for Canada it ships only two recognizers —
-`CA_SIN` and `CA_POSTAL_CODE` — and both are disabled by default. Canadian
-health numbers, driver's licences, passports, Business Numbers and bank details are
-not covered, while closed products (Microsoft Purview's PIPEDA/PHIPA templates, AWS
-Bedrock Guardrails' `CA_HEALTH_NUMBER`) do cover them.
+## See it in 10 seconds
 
-New country recognizers are merged into Presidio slowly, and that is reasonable for a
-project of its size. This package lets you **use Canadian recognizers today**, written
-in Presidio's own style, and we **upstream what Presidio accepts**.
+```diff
+- Patient Jane Tremblay, OHIP 1234-567-897 AB, passport GA123456. Refund to transit 00011-003, account 1234567.
++ Patient <PERSON>, OHIP <CA_HEALTH_NUMBER>, passport <CA_PASSPORT>. Refund to transit <CA_BANK_ACCOUNT>, account <CA_BANK_ACCOUNT>.
+
+- Carte d'assurance maladie BOUF 9451 1419, numéro d'entreprise 123456782 RT 0001, permis de conduire L1234-567890-12.
++ Carte d'assurance maladie <CA_HEALTH_NUMBER>, numéro d'entreprise <CA_BN>, permis de conduire <CA_DRIVER_LICENSE>.
+```
+
+Stock Presidio has no recognizer for any of these Canadian identifiers. *(All identifiers on this page are synthetic.)*
+
+## Why
+
+[Presidio](https://github.com/data-privacy-stack/presidio) is the most widely used open-source PII detector, but for Canada it ships only `CA_SIN` and `CA_POSTAL_CODE`. Health card numbers, passports, Business Numbers, bank details and driver's licences go straight through, while closed tools (Microsoft Purview's PIPEDA/PHIPA templates, AWS Bedrock Guardrails) do detect them.
+
+If you put an LLM, a log pipeline or an analytics store in front of Canadian **healthcare, banking or government** data, that gap matters. canpii closes it today, in Presidio's own style, and [upstreams](#relationship-to-upstream-presidio) whatever Presidio accepts.
 
 ## Quickstart
 
@@ -32,20 +45,22 @@ python -m spacy download fr_core_news_sm
 ```
 
 ```python
-from canpii import create_analyzer, get_preset
+from presidio_anonymizer import AnonymizerEngine
+from canpii import create_analyzer
 
-analyzer = create_analyzer(languages=["en", "fr"])  # spaCy *_sm models, threshold 0.4
-text = "Carte RAMQ ZZZX 8812 2512, numéro d'entreprise 123456782 RT 0001."
-for r in analyzer.analyze(text, language="fr", entities=get_preset("quebec_law25").entity_list()):
-    print(r.entity_type, text[r.start : r.end], round(r.score, 2))
+analyzer = create_analyzer(languages=["en", "fr"])
+text = "Patient Jane Tremblay, OHIP 1234-567-897 AB, passport GA123456. Refund to transit 00011-003, account 1234567."
+results = analyzer.analyze(
+    text,
+    language="en",
+    entities=["PERSON", "CA_HEALTH_NUMBER", "CA_PASSPORT", "CA_BANK_ACCOUNT"],
+    score_threshold=0.4,
+)
+print(AnonymizerEngine().anonymize(text=text, analyzer_results=results).text)
+# Patient <PERSON>, OHIP <CA_HEALTH_NUMBER>, passport <CA_PASSPORT>. Refund to transit <CA_BANK_ACCOUNT>, account <CA_BANK_ACCOUNT>.
 ```
 
-```text
-CA_BN 123456782 RT 0001 1.0
-CA_HEALTH_NUMBER ZZZX 8812 2512 0.85
-```
-
-Already have an `AnalyzerEngine`? Add the recognizers to its registry:
+**Already have an `AnalyzerEngine`?** One line adds everything:
 
 ```python
 from presidio_analyzer import AnalyzerEngine
@@ -60,12 +75,19 @@ print(AnonymizerEngine().anonymize(text=text, analyzer_results=results).text)
 # Patient OHIP <CA_HEALTH_NUMBER>, BC PHN <CA_HEALTH_NUMBER>.
 ```
 
-`register_all()` also enables Presidio's own `CaSinRecognizer` and
-`CaPostalCodeRecognizer`. Use a **score threshold of about 0.4**: weak,
-context-dependent patterns are scored well below it and only cross it when a
-context word ("OHIP", "carte santé", "permis de conduire", …) is nearby.
+`register_all()` also enables Presidio's own `CaSinRecognizer` and `CaPostalCodeRecognizer`. Use a **score threshold around 0.4**: weak, context-dependent patterns only cross it when a context word ("OHIP", "carte santé", "permis de conduire", …) is nearby.
 
-No-code / YAML setup with Presidio's `RecognizerRegistryProvider`:
+**Using a policy?** Pick a preset instead of listing entities:
+
+```python
+from canpii import get_preset
+
+entities = get_preset("phipa").entity_list()   # or "pipeda", "quebec_law25"
+```
+
+<details>
+<summary>No-code / YAML setup</summary>
+
 
 ```python
 import canpii  # registers the classes so `type: predefined` entries resolve
@@ -76,7 +98,27 @@ registry = RecognizerRegistryProvider(
 ).create_recognizer_registry()
 ```
 
-## Supported entities
+</details>
+
+## Coverage
+
+| | Health card | Driver's licence |
+|---|:---:|:---:|
+| **Ontario** | ✅ OHIP | ✅ |
+| **Québec** | ✅ RAMQ | ✅ |
+| **British Columbia** | ✅ PHN (MOD-11 checksum) | ✅ |
+| **Alberta** | ✅ AHCIP | [🙋 #4](https://github.com/ArthurJZL/canpii/issues/4) |
+| **Manitoba** | [🙋 #1](https://github.com/ArthurJZL/canpii/issues/1) | [🙋 #5](https://github.com/ArthurJZL/canpii/issues/5) |
+| **Saskatchewan** | [🙋 #2](https://github.com/ArthurJZL/canpii/issues/2) | 🙋 |
+| **Nova Scotia** | [🙋 #3](https://github.com/ArthurJZL/canpii/issues/3) | 🙋 |
+| **New Brunswick · PEI · Newfoundland and Labrador · territories** | 🙋 | 🙋 |
+
+**Federal:** ✅ SIN · ✅ postal code · ✅ passport · ✅ CRA Business Number (`CA_BN`) · ✅ bank transit / routing / account · [🙋 IRCC UCI #6](https://github.com/ArthurJZL/canpii/issues/6)
+
+✅ supported · 🙋 **open for contributors**: pick one ([how](CONTRIBUTING.md)).
+
+<details>
+<summary>Formats and validation rules for every entity</summary>
 
 | Entity | Province | Format | Validation | Format source | Languages |
 |---|---|---|---|---|---|
@@ -98,9 +140,20 @@ Every rule, with its source URL and confidence level, is in
 they pass (pass `strict=True` to also reject on failure). Rules from **official**
 sources reject matches that fail them.
 
-Other provinces and territories are tracked in [`docs/roadmap.md`](docs/roadmap.md).
+</details>
 
-## Gateways: LiteLLM, ContextForge and others
+## Use it in your LLM gateway
+
+canpii exports its recognizers for tools that speak plain regex:
+
+```bash
+canpii export --format litellm --preset pipeda -l en,fr -o canpii_ad_hoc.json   # LiteLLM Presidio guardrail
+canpii export --format contextforge --preset phipa                              # IBM ContextForge PII filter
+canpii export --format generic                                                  # any MCP / API gateway
+```
+
+<details>
+<summary>All export formats and what you lose without Python</summary>
 
 ```bash
 # LiteLLM presidio_ad_hoc_recognizers JSON (one copy per language)
@@ -128,23 +181,24 @@ For LiteLLM, the Presidio analyzer server must have a French spaCy model loaded 
 canpii` into it and load the `presidio-yaml` export instead: you keep every
 check.
 
-## Policy presets
+</details>
 
-| Preset | Law | Highlights |
-|---|---|---|
-| `pipeda` | PIPEDA (federal private sector) | identity, government and financial numbers, contact details |
-| `phipa` | Ontario PHIPA (health) | health numbers, names, contact details, dates and locations |
-| `quebec_law25` | Quebec P-39.1 as amended by Law 25 | as `pipeda` + dates; French first |
+## How accurate is it?
 
-```python
-from canpii import get_preset
+On a bilingual synthetic benchmark (1,740 sentences, threshold 0.4), with context words present:
 
-get_preset("phipa").entity_list()
-```
+| Entity | Precision | Recall |
+|---|---:|---:|
+| CA_HEALTH_NUMBER | 0.87 | 1.00 |
+| CA_PASSPORT | 1.00 | 1.00 |
+| CA_BN | 1.00 | 1.00 |
+| CA_BANK_ACCOUNT | 0.71 | 1.00 |
+| CA_DRIVER_LICENSE | 0.91 | 1.00 |
 
-Presets are **a starting point, not legal advice** — see [`docs/presets.md`](docs/presets.md).
+This is a **regression benchmark on sentences we wrote, not a real-world accuracy estimate**. Along the way it surfaced a bug in upstream Presidio: `CA_SIN`'s context word "sin" matches inside "bu**sin**ess" ([presidio#2459](https://github.com/data-privacy-stack/presidio/issues/2459)). `create_analyzer()` avoids it by using whole-word context matching.
 
-## Benchmark
+<details>
+<summary>Full benchmark tables and methodology</summary>
 
 `benchmarks/run_benchmark.py` generates a labeled bilingual synthetic corpus (1,740
 sentences: 740 positives with and without context words, 1,000 negatives including
@@ -186,10 +240,18 @@ How to read this:
   table.
 * "substring" vs "whole-word" is Presidio's context matching mode.
   `create_analyzer()` defaults to whole-word: in substring mode, upstream `CA_SIN`'s
-  context word "sin" matches inside "**busin**ess", so every Business Number next to the
+  context word "sin" matches inside "bu**sin**ess", so every Business Number next to the
   word "business" is also reported as a SIN.
 
 Reproduce with `uv run python benchmarks/run_benchmark.py --show-errors`.
+
+</details>
+
+## Contributing
+
+**Know your province's health card or licence format? That's a small PR.** Each one is a self-contained recognizer + validator + tests, with a step-by-step recipe in [CONTRIBUTING.md](CONTRIBUTING.md) and ready-made [good first issues](https://github.com/ArthurJZL/canpii/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22). Francophones: reviewing the Québec French wording ([#7](https://github.com/ArthurJZL/canpii/issues/7)) is just as valuable as code.
+
+Every format rule must cite a source, and **never use real identifiers**, only synthetic ones. Commits are signed off (DCO).
 
 ## Relationship to upstream Presidio
 
@@ -224,12 +286,6 @@ Reproduce with `uv run python benchmarks/run_benchmark.py --show-errors`.
   logs. See [`SECURITY.md`](SECURITY.md).
 * Government programs and agencies are named only to describe the identifiers they
   issue; no endorsement is implied.
-
-## Contributing
-
-Adding a province or identifier is a well-defined task — see
-[`CONTRIBUTING.md`](CONTRIBUTING.md) and the drafted good-first-issues in
-[`docs/issues/`](docs/issues/). Commits must be signed off (DCO).
 
 ## License
 
