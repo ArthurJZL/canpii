@@ -36,9 +36,29 @@
 
 Stock Presidio has no recognizer for any of these Canadian identifiers. *(All identifiers on this page are synthetic.)*
 
+<!-- TODO: enable once the Space is published -->
+<!-- **Try it in your browser:** [canpii demo on Hugging Face Spaces](https://huggingface.co/spaces/ArthurJZL/canpii) -->
+
+## canpii vs stock Presidio
+
+Recall on the 700 labeled Canadian identifiers of the benchmark corpus, threshold 0.4, same spaCy models for both:
+
+| Entity | Gold spans | Stock Presidio: right entity | Stock Presidio: flagged as anything | Presidio + canpii: right entity |
+|---|---:|---:|---:|---:|
+| CA_HEALTH_NUMBER | 240 | 0.000 | 0.696 | 0.863 |
+| CA_PASSPORT | 60 | 0.000 | 0.183 | 0.667 |
+| CA_BN | 60 | 0.000 | 0.500 | 0.933 |
+| CA_BANK_ACCOUNT | 160 | 0.000 | 0.506 | 0.625 |
+| CA_DRIVER_LICENSE | 180 | 0.000 | 0.483 | 0.778 |
+| **All five** | 700 | 0.000 | 0.537 | 0.776 |
+
+"Flagged as anything" counts a span as soon as stock Presidio tags any part of it as any entity, usually `PHONE_NUMBER`, `DATE_TIME` or `US_DRIVER_LICENSE`; it covers the whole identifier for only 0.360 of the spans. All of canpii's misses are in sentences with **no context word**: there it finds 0 of 20 passport numbers and 0 of 60 bank numbers (context-only patterns, by design), while with a context word nearby its recall is 1.000 for all five. Recall is not the whole story: canpii's precision on this corpus is 0.71 to 1.00 ([details](#how-accurate-is-it)).
+
+**Caveat:** this is a synthetic template corpus written by this project, so it is a regression benchmark, not a real-world accuracy estimate. Method and full tables: [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md).
+
 ## Why
 
-[Presidio](https://github.com/data-privacy-stack/presidio) is the most widely used open-source PII detector, but for Canada it ships only `CA_SIN` and `CA_POSTAL_CODE`. Health card numbers, passports, Business Numbers, bank details and driver's licences go straight through, while closed tools (Microsoft Purview's PIPEDA/PHIPA templates, AWS Bedrock Guardrails) do detect them.
+[Presidio](https://github.com/data-privacy-stack/presidio) is the most widely used open-source PII detector, but for Canada it ships only `CA_SIN` and `CA_POSTAL_CODE`. Health card numbers, passports, Business Numbers, bank details and driver's licences are never recognized as what they are (some get tagged as a phone number or a date [by accident](#canpii-vs-stock-presidio)), while closed tools (Microsoft Purview's PIPEDA/PHIPA templates, AWS Bedrock Guardrails) do detect them.
 
 If you put an LLM, a log pipeline or an analytics store in front of Canadian **healthcare, banking or government** data, that gap matters. canpii closes it today, in Presidio's own style, and [upstreams](#relationship-to-upstream-presidio) whatever Presidio accepts.
 
@@ -189,6 +209,11 @@ check.
 
 </details>
 
+## Examples
+
+* [`examples/cohere_rag_redaction`](examples/cohere_rag_redaction/): redact Canadian PII with canpii, then do RAG with Cohere Embed and Chat. Includes reversible pseudonymization (`<CA_HEALTH_NUMBER_1>` placeholders with a local mapping), a check that no raw identifier is in any outgoing payload, and a `--dry-run` mode that needs no API key.
+* [`demo/`](demo/): a Gradio app you can run locally or publish as a Hugging Face Space.
+
 ## How accurate is it?
 
 On a bilingual synthetic benchmark (1,740 sentences, threshold 0.4), with context words present:
@@ -249,7 +274,9 @@ How to read this:
   context word "sin" matches inside "bu**sin**ess", so every Business Number next to the
   word "business" is also reported as a SIN.
 
-Reproduce with `uv run python benchmarks/run_benchmark.py --show-errors`.
+Reproduce with `uv run python benchmarks/run_benchmark.py --show-errors`. The same run
+prints the stock Presidio comparison shown [above](#canpii-vs-stock-presidio); its
+method and full tables are in [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md).
 
 </details>
 
