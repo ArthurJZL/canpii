@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `demo/`: Gradio demo app, ready to publish as a Hugging Face Space.
+- `examples/cohere_rag_redaction/`: redact with canpii, then RAG with Cohere Embed and
+  Chat; reversible pseudonymization, outgoing-payload leak check, `--dry-run`. New
+  optional extra `canpii[examples]` (installs `cohere`).
+- Benchmark: head-to-head recall of stock Presidio vs Presidio + canpii in
+  `benchmarks/run_benchmark.py`, `benchmarks/RESULTS.md` and the README.
+- `docs/blog/`: draft article "What Presidio misses for Canadian PII".
+
 ## [0.1.0] - 2026-11-05
 
 ### Added
