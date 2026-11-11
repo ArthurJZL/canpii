@@ -1,0 +1,9 @@
+# Hugging Face Spaces installs these on top of the Gradio SDK image.
+# Keep gradio in step with sdk_version in README.md.
+canpii==0.1.0
+gradio==6.31.0
+presidio-analyzer==2.2.366
+presidio-anonymizer==2.2.366
+# spaCy small models are not on PyPI: install the wheels by URL.
+en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+fr_core_news_sm @ https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.8.0/fr_core_news_sm-3.8.0-py3-none-any.whl

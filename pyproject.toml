@@ -85,6 +85,8 @@ include = [
     "LICENSE",
     "NOTICE",
 ]
+# "README.md" above matches at any depth; keep the demo and examples out.
+exclude = ["/demo", "/examples"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/canpii"]
