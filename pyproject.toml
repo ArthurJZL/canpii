@@ -55,6 +55,7 @@ dependencies = [
 
 [project.optional-dependencies]
 anonymizer = ["presidio-anonymizer>=2.2.365"]
+examples = ["cohere>=7.3"]  # examples/cohere_rag_redaction (not shipped in the wheel)
 
 [project.urls]
 Homepage = "https://github.com/ArthurJZL/canpii"
@@ -71,6 +72,7 @@ dev = [
     "pytest>=8",
     "ruff>=0.6",
     "presidio-anonymizer>=2.2.365",
+    "cohere>=7.3",  # lets tests/test_cohere_example.py drive the real SDK offline
 ]
 
 [tool.hatch.build.targets.sdist]
@@ -94,7 +96,7 @@ packages = ["src/canpii"]
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-src = ["src", "tests", "benchmarks"]
+src = ["src", "tests", "benchmarks", "demo", "examples"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "D"]
