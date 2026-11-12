@@ -36,8 +36,7 @@
 
 Stock Presidio has no recognizer for any of these Canadian identifiers. *(All identifiers on this page are synthetic.)*
 
-<!-- TODO: enable once the app is deployed on Streamlit Community Cloud (see demo/README.md); the URL below is a placeholder until then -->
-<!-- **Try it in your browser:** [canpii demo on Streamlit Community Cloud](https://canpii.streamlit.app) -->
+**Try it in your browser:** [canpii demo on Streamlit Community Cloud](https://canpii.streamlit.app)
 
 ## canpii vs stock Presidio
 
