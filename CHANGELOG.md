@@ -8,7 +8,7 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
-- `demo/`: Gradio demo app, ready to publish as a Hugging Face Space.
+- `demo/`: Streamlit demo app, ready to deploy on Streamlit Community Cloud.
 - `examples/cohere_rag_redaction/`: redact with canpii, then RAG with Cohere Embed and
   Chat; reversible pseudonymization, outgoing-payload leak check, `--dry-run`. New
   optional extra `canpii[examples]` (installs `cohere`).

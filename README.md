@@ -36,8 +36,8 @@
 
 Stock Presidio has no recognizer for any of these Canadian identifiers. *(All identifiers on this page are synthetic.)*
 
-<!-- TODO: enable once the Space is published -->
-<!-- **Try it in your browser:** [canpii demo on Hugging Face Spaces](https://huggingface.co/spaces/ArthurJZL/canpii) -->
+<!-- TODO: enable once the app is deployed on Streamlit Community Cloud (see demo/README.md); the URL below is a placeholder until then -->
+<!-- **Try it in your browser:** [canpii demo on Streamlit Community Cloud](https://canpii.streamlit.app) -->
 
 ## canpii vs stock Presidio
 
@@ -212,7 +212,7 @@ check.
 ## Examples
 
 * [`examples/cohere_rag_redaction`](examples/cohere_rag_redaction/): redact Canadian PII with canpii, then do RAG with Cohere Embed and Chat. Includes reversible pseudonymization (`<CA_HEALTH_NUMBER_1>` placeholders with a local mapping), a check that no raw identifier is in any outgoing payload, and a `--dry-run` mode that needs no API key.
-* [`demo/`](demo/): a Gradio app you can run locally or publish as a Hugging Face Space.
+* [`demo/`](demo/): a Streamlit app you can run locally or deploy on Streamlit Community Cloud.
 
 ## How accurate is it?
 
