@@ -44,6 +44,15 @@ def test_detected_with_context(analyzer, rng, lang, template, kind):
     assert (entity, value) in _found(analyzer, text, lang), text
 
 
+def test_tvq_context_boosts_bare_business_number(analyzer, rng):
+    # A bare 9-digit root only passes the threshold thanks to context, so
+    # this fails if "tvq" is missing from the BN context list ("tps" is
+    # deliberately not in it: it matches inside "https").
+    value = synthetic.bn(rng, formatted=False)
+    text = f"Numéros de TPS et de TVQ : {value}"
+    assert ("CA_BN", value) in _found(analyzer, text, "fr"), text
+
+
 def test_anonymizer_masks_canadian_entities(analyzer, rng):
     from presidio_anonymizer import AnonymizerEngine
 

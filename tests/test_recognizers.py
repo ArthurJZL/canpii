@@ -225,7 +225,7 @@ class TestNegativeContext:
         assert best(rec, "order 123456782 RT 0001", "123456782 RT 0001") == pytest.approx(0.7)
 
     def test_word_boundaries(self):
-        # "tel" must not fire inside "hotel"; "poste" not inside "composte".
+        # "tel" must not fire inside "hotel".
         rec = CaBankAccountRecognizer()
         assert matches(rec, "Hotel account 1234567") != []
 

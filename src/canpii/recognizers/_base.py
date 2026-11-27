@@ -69,7 +69,6 @@ class CanadianPatternRecognizer(PatternRecognizer):
         "appeler",
         "cellulaire",
         "télécopieur",
-        "poste",
         "commande",
         "facture",
         "suivi",

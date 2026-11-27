@@ -2,7 +2,11 @@
 
 Presidio's default ``LemmaContextAwareEnhancer`` compares each context word
 against the *lemmas of single tokens* near a match, using case-insensitive
-**substring** matching. Two consequences shape these lists:
+**substring** matching. ``create_analyzer()`` defaults to whole-word matching,
+but these lists must stay safe under substring matching: ``register_all()`` on
+a user-built engine, the YAML / LiteLLM exports (someone else's analyzer) and
+older presidio-analyzer versions all use Presidio's default. Two consequences
+shape these lists:
 
 * Multi-word phrases ("health card") never match as a whole, so we list the
   distinctive single tokens instead ("health", "card", "carte", "santé").

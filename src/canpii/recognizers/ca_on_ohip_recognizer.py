@@ -48,7 +48,7 @@ class CaOnOhipRecognizer(CanadianPatternRecognizer):
         ),
     ]
 
-    CONTEXT = ["ohip", "hcn", *HEALTH_EN, "assurance", "ontarienne", *HEALTH_FR]
+    CONTEXT = ["ohip", "hcn", *HEALTH_EN, "assurance", *HEALTH_FR]
 
     def verified_check(self, pattern_text: str) -> bool | None:
         """Reject anything that is not 10 digits + optional version code."""

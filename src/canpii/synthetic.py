@@ -305,7 +305,11 @@ _TEMPLATES: dict[str, dict[str, dict[str, list[str]]]] = {
             "bare": ["See record {v}."],
         },
         "fr": {
-            "ctx": ["Numéro d'entreprise (TPS/TVH) : {v}", "Le numéro d'entreprise est {v}."],
+            "ctx": [
+                "Numéro d'entreprise (TPS/TVH) : {v}",
+                "Le numéro d'entreprise est {v}.",
+                "Numéros de TPS et de TVQ : {v}",
+            ],
             "bare": ["Voir le dossier {v}."],
         },
     },
@@ -376,7 +380,7 @@ _TEMPLATES: dict[str, dict[str, dict[str, list[str]]]] = {
         },
         "fr": {
             "ctx": ["Numéro d'assurance sociale (NAS) : {v}"],
-            "bare": ["Le suivi {v} est livré."],
+            "bare": ["Le colis {v} est livré."],
         },
     },
 }
@@ -418,7 +422,7 @@ _HARD_NEGATIVE_TEMPLATES: dict[str, list[tuple[str, str]]] = {
         ("iso_date", "Compte bancaire ouvert le {v}."),
         ("order_id", "Billet du bureau des passeports {v}."),
         ("order_id", "Commande {v} de l'entreprise remboursée."),
-        ("iso_date", "Rendez-vous carte santé le {v}."),
+        ("iso_date", "Rendez-vous pour la carte santé le {v}."),
     ],
 }
 
