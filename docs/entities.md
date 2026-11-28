@@ -79,8 +79,11 @@ against single-token lemmas near the match. Multi-word phrases ("health
 card") never match as a whole, so the lists contain distinctive single
 tokens. Short tokens that occur inside common words are avoided because
 Presidio's default matching is by substring (`dl` ⊂ "handle", `nam` ⊂
-"name", `tps` ⊂ "https", `cra` ⊂ "democracy"). See
-`src/canpii/recognizers/_context.py`.
+"name", `tps` ⊂ "https", `cra` ⊂ "democracy"). `create_analyzer()` defaults
+to whole-word matching, but the lists must stay safe under substring matching:
+`register_all()` on a user-built engine, the YAML / LiteLLM exports (someone
+else's analyzer) and older presidio-analyzer versions all use Presidio's
+default. See `src/canpii/recognizers/_context.py`.
 
 Weak matches (base score ≤ 0.3) are dropped when a *negative* context word
 such as "phone", "call", "order", "téléphone", "appelez" or "commande"

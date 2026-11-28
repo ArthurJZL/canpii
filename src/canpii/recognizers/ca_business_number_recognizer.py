@@ -60,6 +60,7 @@ class CaBusinessNumberRecognizer(CanadianPatternRecognizer):
         "bienfaisance",
         "revenue",
         "revenu",
+        "tvq",
     ]
 
     def verified_check(self, pattern_text: str) -> bool | None:

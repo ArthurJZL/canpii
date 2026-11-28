@@ -16,6 +16,15 @@ All notable changes to this project are documented here. The format follows
   `benchmarks/run_benchmark.py`, `benchmarks/RESULTS.md` and the README.
 - `docs/blog/`: draft article "What Presidio misses for Canadian PII".
 
+### Changed
+
+- French context words reviewed for Québec usage: added `tvq` (business number);
+  removed `ontarienne` (OHIP) and `poste` (negative context). Two French test
+  sentences reworded, and a "Numéros de TPS et de TVQ" sentence added to the benchmark
+  corpus (`benchmarks/RESULTS.md` and all README benchmark tables regenerated).
+- `_context.py` and `docs/entities.md` explain why the context lists must stay safe
+  under substring matching even though `create_analyzer()` defaults to whole-word.
+
 ## [0.1.0] - 2026-11-05
 
 ### Added

@@ -40,18 +40,18 @@ Stock Presidio has no recognizer for any of these Canadian identifiers. *(All id
 
 ## canpii vs stock Presidio
 
-Recall on the 700 labeled Canadian identifiers of the benchmark corpus, threshold 0.4, same spaCy models for both:
+Recall on the 710 labeled Canadian identifiers of the benchmark corpus, threshold 0.4, same spaCy models for both:
 
 | Entity | Gold spans | Stock Presidio: right entity | Stock Presidio: flagged as anything | Presidio + canpii: right entity |
 |---|---:|---:|---:|---:|
 | CA_HEALTH_NUMBER | 240 | 0.000 | 0.696 | 0.863 |
 | CA_PASSPORT | 60 | 0.000 | 0.183 | 0.667 |
-| CA_BN | 60 | 0.000 | 0.500 | 0.933 |
-| CA_BANK_ACCOUNT | 160 | 0.000 | 0.506 | 0.625 |
-| CA_DRIVER_LICENSE | 180 | 0.000 | 0.483 | 0.778 |
-| **All five** | 700 | 0.000 | 0.537 | 0.776 |
+| CA_BN | 70 | 0.000 | 0.429 | 0.957 |
+| CA_BANK_ACCOUNT | 160 | 0.000 | 0.525 | 0.625 |
+| CA_DRIVER_LICENSE | 180 | 0.000 | 0.478 | 0.778 |
+| **All five** | 710 | 0.000 | 0.532 | 0.780 |
 
-"Flagged as anything" counts a span as soon as stock Presidio tags any part of it as any entity, usually `PHONE_NUMBER`, `DATE_TIME` or `US_DRIVER_LICENSE`; it covers the whole identifier for only 0.360 of the spans. All of canpii's misses are in sentences with **no context word**: there it finds 0 of 20 passport numbers and 0 of 60 bank numbers (context-only patterns, by design), while with a context word nearby its recall is 1.000 for all five. Recall is not the whole story: canpii's precision on this corpus is 0.71 to 1.00 ([details](#how-accurate-is-it)).
+"Flagged as anything" counts a span as soon as stock Presidio tags any part of it as any entity, usually `PHONE_NUMBER`, `DATE_TIME` or `US_DRIVER_LICENSE`; it covers the whole identifier for only 0.368 of the spans. All of canpii's misses are in sentences with **no context word**: there it finds 0 of 20 passport numbers and 0 of 60 bank numbers (context-only patterns, by design), while with a context word nearby its recall is 1.000 for all five. Recall is not the whole story: canpii's precision on this corpus is 0.71 to 1.00 ([details](#how-accurate-is-it)).
 
 **Caveat:** this is a synthetic template corpus written by this project, so it is a regression benchmark, not a real-world accuracy estimate. Method and full tables: [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md).
 
@@ -215,23 +215,23 @@ check.
 
 ## How accurate is it?
 
-On a bilingual synthetic benchmark (1,740 sentences, threshold 0.4), with context words present:
+On a bilingual synthetic benchmark (1,750 sentences, threshold 0.4), with context words present:
 
 | Entity | Precision | Recall |
 |---|---:|---:|
-| CA_HEALTH_NUMBER | 0.87 | 1.00 |
+| CA_HEALTH_NUMBER | 0.85 | 1.00 |
 | CA_PASSPORT | 1.00 | 1.00 |
 | CA_BN | 1.00 | 1.00 |
 | CA_BANK_ACCOUNT | 0.71 | 1.00 |
-| CA_DRIVER_LICENSE | 0.91 | 1.00 |
+| CA_DRIVER_LICENSE | 0.90 | 1.00 |
 
 This is a **regression benchmark on sentences we wrote, not a real-world accuracy estimate**. Along the way it surfaced a bug in upstream Presidio: `CA_SIN`'s context word "sin" matches inside "bu**sin**ess" ([presidio#2459](https://github.com/data-privacy-stack/presidio/issues/2459)). `create_analyzer()` avoids it by using whole-word context matching.
 
 <details>
 <summary>Full benchmark tables and methodology</summary>
 
-`benchmarks/run_benchmark.py` generates a labeled bilingual synthetic corpus (1,740
-sentences: 740 positives with and without context words, 1,000 negatives including
+`benchmarks/run_benchmark.py` generates a labeled bilingual synthetic corpus (1,750
+sentences: 750 positives with and without context words, 1,000 negatives including
 phone numbers, dates, order IDs, amounts, near-miss identifiers and "hard negatives"
 that put a context word next to an unrelated number) and reports precision/recall at
 threshold 0.4.
@@ -240,23 +240,23 @@ Positives **with context words** (seed 2026, `presidio-analyzer` 2.2.366, spaCy 
 
 | Entity | Gold | P (substring) | R (substring) | P (whole-word) | R (whole-word) |
 |---|---:|---:|---:|---:|---:|
-| CA_HEALTH_NUMBER | 160 | 0.870 | 1.000 | 0.870 | 1.000 |
+| CA_HEALTH_NUMBER | 160 | 0.851 | 1.000 | 0.851 | 1.000 |
 | CA_PASSPORT | 40 | 1.000 | 1.000 | 1.000 | 1.000 |
-| CA_BN | 40 | 1.000 | 1.000 | 1.000 | 1.000 |
+| CA_BN | 50 | 1.000 | 1.000 | 1.000 | 1.000 |
 | CA_BANK_ACCOUNT | 100 | 0.714 | 1.000 | 0.714 | 1.000 |
-| CA_DRIVER_LICENSE | 120 | 0.909 | 1.000 | 0.909 | 1.000 |
+| CA_DRIVER_LICENSE | 120 | 0.902 | 1.000 | 0.902 | 1.000 |
 | CA_SIN (upstream) | 20 | 0.526 | 1.000 | 1.000 | 1.000 |
 
 All positives, including sentences **without** context words:
 
 | Entity | Gold | P (substring) | R (substring) | P (whole-word) | R (whole-word) |
 |---|---:|---:|---:|---:|---:|
-| CA_HEALTH_NUMBER | 240 | 0.896 | 0.863 | 0.896 | 0.863 |
+| CA_HEALTH_NUMBER | 240 | 0.881 | 0.863 | 0.881 | 0.863 |
 | CA_PASSPORT | 60 | 1.000 | 0.667 | 1.000 | 0.667 |
-| CA_BN | 60 | 1.000 | 0.933 | 1.000 | 0.933 |
+| CA_BN | 70 | 1.000 | 0.957 | 1.000 | 0.957 |
 | CA_BANK_ACCOUNT | 160 | 0.714 | 0.625 | 0.714 | 0.625 |
-| CA_DRIVER_LICENSE | 180 | 0.921 | 0.778 | 0.921 | 0.778 |
-| CA_SIN (upstream) | 40 | 0.679 | 0.950 | 1.000 | 0.950 |
+| CA_DRIVER_LICENSE | 180 | 0.915 | 0.778 | 0.915 | 0.778 |
+| CA_SIN (upstream) | 40 | 0.660 | 0.875 | 1.000 | 0.875 |
 
 How to read this:
 
